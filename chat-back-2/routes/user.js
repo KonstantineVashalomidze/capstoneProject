@@ -27,8 +27,7 @@ router.get("/get-calls", authController.protect, userController.getCalls);
 router.get("/get-friend-requests", authController.protect, userController.getFriendRequests);
 router.get("/get-friends", authController.protect, userController.getFriends);
 router.get("/get-mutual-friends", authController.protect, userController.getMutualFriends);
-
-
+router.get("/get-current-conversation-messages/:conversationId", authController.protect, userController.getCurrentConversationMessages);
 
 
 

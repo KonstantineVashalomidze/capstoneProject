@@ -25,10 +25,10 @@ const initialState = {
         },
         currentConversation: {
             _id: "",
-            isPinned: null,
+            isPinned: false,
             participants: [],
             messages: [],
-            isIndividual: null,
+            isIndividual: true,
         },
     },
     logs: {
@@ -159,6 +159,9 @@ const slice = createSlice({
         fetchFriends(state, action) {
             state.loggedInUser.friends = action.payload;
         },
+        fetchCurrentConversationMessages(state, action) {
+            state.conversations.currentConversation.messages = action.payload;
+        }
     }
 })
 
@@ -308,3 +311,22 @@ export function fetchFriendsAction () {
         });
     };
 };
+
+
+
+export function fetchCurrentConversationMessagesAction (conversationId) {
+    return async (dispatch, getState) => {
+        await axios.get(`/user/get-current-conversation-messages/${conversationId}`, {
+            headers: {
+                "Content-type": "application/json",
+                Authorization: `Bearer ${getState().auth.token}`,
+            },
+        }).then((res) => {
+            dispatch(slice.actions.fetchCurrentConversationMessages(res.data.data));
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+}
+
+

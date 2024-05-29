@@ -7,12 +7,18 @@ import Sidebar from "./Sidebar";
 import {useDispatch, useSelector} from "react-redux";
 import {connectSocket, socket} from "../../sockets/socket";
 import {
-    addFriendRequestAction, friendAcceptedRequestAction, friendRequestAcceptedAction,
+    addFriendRequestAction,
+    fetchCurrentConversationMessagesAction, fetchGroupConversationsAction, fetchIndividualConversationsAction,
+    friendAcceptedRequestAction,
+    friendRequestAcceptedAction,
     friendRequestReceivedAction,
-    SelectConversationElement, setCurrentConversationAction, setCurrentConversationsAction,
+    SelectConversationElement,
+    setCurrentConversationAction,
+    setCurrentConversationsAction,
     setLoggedInUserAction,
     setSnackbarAction,
-    showSnackbar, updateFriendRequestAction
+    showSnackbar,
+    updateFriendRequestAction
 } from "../../redux/slices/app";
 
 
@@ -139,11 +145,14 @@ const DashboardLayout = () => {
 
             socket.on("textMessageReceivedNotification", (data) => {
                 dispatch(setSnackbarAction({
-                    duration: 3000, 
+                    duration: 3000,
                     isOpened: true,
-                    message: "erwam",
-                    severity: data.status
+                    message: "New message notification",
+                    severity: "success",
                 }));
+
+                dispatch(fetchCurrentConversationMessagesAction(data.conversationId));
+
             });
 
 
@@ -160,9 +169,6 @@ const DashboardLayout = () => {
             socket?.off("textMessageReceivedNotification");
         };
     }, [isLoggedIn, socket]);
-
-
-
 
 
     if (!isLoggedIn) {

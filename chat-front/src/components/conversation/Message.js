@@ -106,14 +106,12 @@ const MessageWrapper = ({subtype, el, menu}) => {
 const Message = ({menu}) => {
     const currentConversation = useSelector(state => state.app.conversations.currentConversation);
     const userId = useSelector(state => state.app.loggedInUser._id);
-    const formattedChatHistory = currentConversation.messages.flatMap((message) => {
-
+    const formattedChatHistory = currentConversation.messages.flatMap((message) =>  {
         const formattedMessage = {
             type: "Message",
             incoming: message.sender._id.toString() !== userId.toString(),
             outgoing: message.sender._id.toString() === userId.toString(),
         };
-
         switch (message.type) {
             case "Text":
                 formattedMessage.message = message.text;
@@ -138,6 +136,9 @@ const Message = ({menu}) => {
 
         return formattedMessage;
     });
+
+
+
 
 
 

@@ -348,6 +348,24 @@ exports.getFriends = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getCurrentConversationMessages = catchAsync(async (req, res, next) => {
+  const conversationId = req.params.conversationId; // Get the conversationId from the URL parameters
+
+// Fetch the conversation from the database using the conversationId and populate the sender field
+  const conversation = await Conversation.findById(conversationId).populate('messages.sender', '_id');
+
+  if (!conversation) {
+    console.log("conversation not found: getCurrentConversation")
+    return;
+  }
+  // Send the conversation messages as the response
+  res.status(200).json({
+    status: 'success',
+    message: 'Conversation messages retrieved',
+    data: conversation.messages
+  });
+
+});
 
 
 exports.getMutualFriends = catchAsync(async (req, res, next) => {
@@ -398,6 +416,8 @@ exports.getMutualFriends = catchAsync(async (req, res, next) => {
     message: 'Friends found successfully!',
   });
 });
+
+
 
 
 

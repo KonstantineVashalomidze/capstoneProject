@@ -224,17 +224,15 @@ io.on("connection", async (socket) => {
 
   socket.on("textMessage", async (data) => {
     const { sender, conversationId, text } = data;
-    const existingConversation = await Conversation.findById(conversationId);
-  
+    const existingConversation = await Conversation.findById(conversationId).populate('participants', 'socketId');
     if (existingConversation) {
       if (!existingConversation.messages) {
         existingConversation.messages = [];
       }
+
       existingConversation.messages.push({ sender, type: "Text", text });
-  
       await existingConversation.save();
-  
-      existingConversation.participants.forEach(p => {
+      await existingConversation.participants.forEach(p => {
         if (p?.socketId) {
           io.to(p.socketId).emit("textMessageReceivedNotification", {
             conversationId
