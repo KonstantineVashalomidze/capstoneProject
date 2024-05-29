@@ -1,0 +1,37 @@
+const router = require("express").Router();
+
+const userController = require("../controllers/userController");
+const authController = require("../controllers/authController");
+
+/*router.post(
+  "/generate-zego-token",
+  authController.protect,
+  userController.generateZegoToken
+);
+router.get("/get-call-logs", authController.protect, userController.getCallLogs);
+router.get("/get-me", authController.protect, userController.getMe);
+router.patch("/update-me", authController.protect, userController.updateMe);
+router.get("/get-all-verified-users", authController.protect, userController.getAllVerifiedUsers);
+router.get("/get-users", authController.protect, userController.getUsers);
+router.get("/get-friend-requests", authController.protect, userController.getAllFriendRequests);
+router.get("/get-friends", authController.protect, userController.getFriends);
+router.post("/start-audio-call", authController.protect, userController.startAudioCall);
+router.post("/start-video-call", authController.protect, userController.startVideoCall);*/
+
+
+
+/* new code starts from here */
+router.get("/get-individual-conversations", authController.protect, userController.getIndividualConversations);
+router.get("/get-group-conversations", authController.protect, userController.getGroupConversations);
+router.get("/get-calls", authController.protect, userController.getCalls);
+router.get("/get-friend-requests", authController.protect, userController.getFriendRequests);
+router.get("/get-friends", authController.protect, userController.getFriends);
+router.get("/get-mutual-friends", authController.protect, userController.getMutualFriends);
+
+
+
+
+
+
+
+module.exports = router;

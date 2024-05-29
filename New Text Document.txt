@@ -1,0 +1,13 @@
+twilio:
+	M2S638E21BNJZSGJ9ESST6VK
+	vashalomidzekonstantine@gmail.com
+	Dfa1c831b1!abcde
+
+mongo: 
+	mamaafrica
+	ELhLArvYYZNw1JXW
+
+google: 
+	giogiodagio3@gmail.com
+	chat-app
+	ifpd iniv hsyj zrqj
