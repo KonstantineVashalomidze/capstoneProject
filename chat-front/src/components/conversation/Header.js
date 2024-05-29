@@ -44,25 +44,37 @@ const Header = () => {
     const dispatch = useDispatch();
     const currentConversation = useSelector((state) => state.app.conversations.currentConversation);
     const userId = useSelector(state => state.app.loggedInUser._id);
-    const participants = currentConversation?.participants.map(e => e._id !== userId);
+    const participants = currentConversation?.participants.filter(e => e._id !== userId);
     const isGroup = useSelector(state => state.app.sidebar.selectedIcon === "group");
-    const avatarOnline = (participants?.map(el => el.status === "Online" && el._id !== userId).length > 0);
+    const name = isGroup ? participants?.reduce((accumulator, currentValue, currentIndex) => {
+        if (currentIndex < 3) {
+            if (currentIndex !== 2)
+            {
+                return accumulator + currentValue.firstName + ", ";
+            } else {
+                return accumulator + currentValue.firstName;
+            }
+        }
+       return accumulator;
+    }, "") : participants.find(p => p._id.toString() !== userId).firstName + " " + participants.find(p => p._id.toString() !== userId).lastName;
+
+    const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId).status === "Online");
 
 
     return (
         <Stack alignItems={"center"} direction={"row"} justifyContent={"space-between"} sx={{width: "100%", height: "100%"}}>
             <Stack direction={"row"} spacing={2} >
-                {avatarOnline ? (<StyledBadge overlap={"circular"} anchorOrigin={{vertical: "bottom", horizontal: "right"}} variant={"dot"}>
-                    <Avatar onClick={() => {if (!isGroup) dispatch(toggleContactInfoAction()); } } alt={currentConversation?.name} src={currentConversation?.avatar} sx={{boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)", cursor: "pointer"}} />
+                {online ? (<StyledBadge overlap={"circular"} anchorOrigin={{vertical: "bottom", horizontal: "right"}} variant={"dot"}>
+                    <Avatar onClick={() => {if (!isGroup) dispatch(toggleContactInfoAction()); } } alt={name} src={currentConversation?.avatar} sx={{boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)", cursor: "pointer"}} />
                 </StyledBadge>) :
-                   (<Avatar onClick={() => {if (!isGroup) dispatch(toggleContactInfoAction()); } } alt={currentConversation?.name} src={currentConversation?.avatar} sx={{boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)", cursor: "pointer"}} />)
+                   (<Avatar onClick={() => {if (!isGroup) dispatch(toggleContactInfoAction()); } } alt={name} src={currentConversation?.avatar} sx={{boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)", cursor: "pointer"}} />)
                 }
                 <Stack spacing={0.2} >
                     <Typography variant={"subtitle2"}>
-                        {currentConversation?.name}
+                        {name}
                     </Typography>
                     <Typography variant={"caption"}>
-                        {currentConversation?.status}
+                        {online ? "Online" : "Offline"}
                     </Typography>
                 </Stack>
             </Stack>

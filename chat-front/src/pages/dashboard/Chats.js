@@ -61,7 +61,7 @@ export const ChatElement = ({ _id, messages, participants }) => {
        return accumulator;
     }, "") : participants.find(p => p._id.toString() !== userId).firstName + " " + participants.find(p => p._id.toString() !== userId).lastName;
 
-    const online = isGroup ? participants?.some(p => p.status === "online") : (participants?.find(p => p._id.toString() !== userId).status === "Online");
+    const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId).status === "Online");
 
 
 

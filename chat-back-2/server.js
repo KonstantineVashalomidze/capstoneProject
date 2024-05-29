@@ -188,34 +188,31 @@ io.on("connection", async (socket) => {
 
 
 
-  // TODO this must be changed
+
   socket.on("startConversation", async (data) => {
     // Receive the "startConversation" event from the client
-    // data: An object containing the user IDs of the participants {to: recipientUserId, from: senderUserId}
-
-    const { to, from } = data;    // Destructure the "to" and "from" properties from the received data object
-
+    const {conversationParticipants} = data;    // Destructure the "conversationInitiator: id" and "conversationParticipants: list of id's" properties from the received data object
     // Check if there is any existing conversation between the two participants
     // Query the database for any existing conversations where the "participants" array has exactly two elements,
     // and both elements match the "to" and "from" user IDs.
     // Populate the "participants" field with the firstName, lastName, _id, email, and status fields from the user documents.
     const existingConversations = await Conversation.find({
-      participants: { $size: 2, $all: [to, from] },
+      participants: { $all: conversationParticipants},
     }).populate("participants", "firstName lastName _id email status");
 
     // If no existing conversation is found, create a new conversation document and emit the
-    // "startChat" event with the new conversation details
+    // "newConversationStarted" event with the new conversation details
     if (existingConversations.length === 0) {
-      // Create a new conversation document in the database with the "to" and "from" user IDs as participants
+      // Create a new conversation document in the database with the "sender" and "conversationParticipants" user IDs as participants
       let newChat = await Conversation.create({
-        participants: [to, from],
+        participants: conversationParticipants,
       });
       // Fetch the newly created conversation document and populate the "participants" field with user details
       newChat = await Conversation.findById(newChat).populate(
         "participants",
         "firstName lastName _id email status"
       );
-      // Emit the "startChat" event to the client with the new conversation details as the payload
+      // Emit the "newConversationStarted" event to the client with the new conversation details as the payload
       socket.emit("newConversationStarted", {data: newChat, message: "new conversation created"});
     }
     else {
@@ -223,6 +220,30 @@ io.on("connection", async (socket) => {
       socket.emit("newConversationStarted", {data: existingConversations[0]});
     }
   });
+
+
+  socket.on("textMessage", async (data) => {
+    const { sender, conversationId, text } = data;
+    const existingConversation = await Conversation.findById(conversationId);
+  
+    if (existingConversation) {
+      if (!existingConversation.messages) {
+        existingConversation.messages = [];
+      }
+      existingConversation.messages.push({ sender, type: "Text", text });
+  
+      await existingConversation.save();
+  
+      existingConversation.participants.forEach(p => {
+        if (p?.socketId) {
+          io.to(p.socketId).emit("textMessageReceivedNotification", {
+            conversationId
+          });
+        }
+      });
+    }
+  });
+
 
   socket.on("getMessages", async (data, callback) => {
     try {

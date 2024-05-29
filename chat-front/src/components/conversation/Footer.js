@@ -126,8 +126,7 @@ const Footer = () => {
     };
 
     const onSendMessage = (message) => {
-        // Handle the send message event here
-        socket.emit("textMessage", {message, inConversation: currentConversation._id, sender: userId});
+        socket.emit("textMessage", {text: message, conversationId: currentConversation._id, sender: userId});
     };
 
     return (

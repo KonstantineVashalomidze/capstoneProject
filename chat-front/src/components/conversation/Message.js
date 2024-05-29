@@ -107,10 +107,11 @@ const Message = ({menu}) => {
     const currentConversation = useSelector(state => state.app.conversations.currentConversation);
     const userId = useSelector(state => state.app.loggedInUser._id);
     const formattedChatHistory = currentConversation.messages.flatMap((message) => {
+
         const formattedMessage = {
             type: "Message",
-            incoming: message.to.toString() === userId, // Replace userId with the current user's ID
-            outgoing: message.from.toString() === userId, // Replace userId with the current user's ID
+            incoming: message.sender._id.toString() !== userId.toString(),
+            outgoing: message.sender._id.toString() === userId.toString(),
         };
 
         switch (message.type) {

@@ -52,7 +52,7 @@ const FriendRequests = ({ open, onClose }) => {
                         {currentTab !== 2 && <ListItemText primary={`${item.firstName} ${item.lastName}`}/>}
                         {currentTab === 2 && <ListItemText primary={`${item.recipient === null ? item.sender.firstName : item.received.from.firstName} ${item.received.from === null ? item.sender.lastName : item.received.from.lastName}`}/>}
                         {currentTab === 0 && <IconButton onClick={() => { socket.emit("sendNewFriendRequest", {to: item._id, from: userId}) } } >{onlySentFriendRequests.some(obj => item._id.toString() === obj.sent.to._id.toString()) || onlyReceivedFriendRequests.some(obj => item._id.toString() === obj.received.from._id.toString()) ? null : <Plus />}</IconButton>}
-                        {currentTab === 1 && <IconButton onClick={() => { socket.emit("startConversation", {to: item._id, from: userId }); }} ><ChatDots /></IconButton>}
+                        {currentTab === 1 && <IconButton onClick={() => { socket.emit("startConversation", { conversationParticipants: [userId, item._id] }); }} ><ChatDots /></IconButton>}
                         {currentTab === 2 && (
                             <>
                                 <IconButton onClick={() => { socket.emit("acceptFriendRequest", { senderId: item.received.from._id, recipientId: userId }); }} >

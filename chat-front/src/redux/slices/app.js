@@ -38,7 +38,6 @@ const initialState = {
             message: "",
             severity: "",
         },
-
     },
     contactInfo: {
         isMuted: false,

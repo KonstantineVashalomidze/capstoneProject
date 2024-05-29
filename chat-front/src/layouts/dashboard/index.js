@@ -137,6 +137,16 @@ const DashboardLayout = () => {
 
             });
 
+            socket.on("textMessageReceivedNotification", (data) => {
+                dispatch(setSnackbarAction({
+                    duration: 3000, 
+                    isOpened: true,
+                    message: "erwam",
+                    severity: data.status
+                }));
+            });
+
+
 
         }
 
@@ -147,6 +157,7 @@ const DashboardLayout = () => {
             socket?.off("friendRequestSent");
             socket?.off("newConversationStarted");
             socket?.off("conversationBlocked");
+            socket?.off("textMessageReceivedNotification");
         };
     }, [isLoggedIn, socket]);
 
