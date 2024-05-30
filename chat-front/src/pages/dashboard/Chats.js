@@ -53,7 +53,7 @@ export const ChatElement = ({ _id, name, messages, participants }) => {
 
 
 
-    const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId).status === "Online");
+    const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId)?.status === "Online");
 
 
 

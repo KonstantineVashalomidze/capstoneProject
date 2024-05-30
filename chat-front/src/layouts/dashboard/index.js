@@ -33,7 +33,7 @@ const DashboardLayout = () => {
     
     useEffect(() => {
 
-        if (isLoggedIn && isVerified) {
+        if (isLoggedIn) {
             window.onload = function () {
                 if (!window.location.hash) {
                     window.location = window.location + "#loaded";
