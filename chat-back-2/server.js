@@ -138,29 +138,6 @@ io.on("connection", async (socket) => {
     });
   });
 
-  socket.on("blockConversation", async (data) => {
-    // Find the conversation by ID
-    const conversation = await Conversation.findById(data.currentConversationId).populate('participants');
-
-    if (!conversation) {
-      // Handle case where the conversation was not found
-      return;
-    }
-
-    // Update the conversation's 'isBlocked' status
-    conversation.isBlocked = true;
-    await conversation.save();
-
-    // Notify all participants about the conversation being blocked
-    conversation.participants.forEach(participant => {
-      console.log(participant._id);
-      io.to(participant?.socketId).emit("conversationBlocked", {
-        status: "success",
-        message: "Conversation blocked"
-      });
-    });
-
-  });
 
   socket.on("rejectFriendRequest", async (data) => {
     const reqDoc = await FriendRequest.findById(data.requestId);
@@ -188,7 +165,7 @@ io.on("connection", async (socket) => {
 
   socket.on("startConversation", async (data) => {
     // Receive the "startConversation" event from the client
-    const {conversationParticipants} = data;    // Destructure the "conversationInitiator: id" and "conversationParticipants: list of id's" properties from the received data object
+    const {initiator, conversationParticipants, groupName} = data;    // Destructure the "conversationInitiator: id" and "conversationParticipants: list of id's" properties from the received data object
     // Check if there is any existing conversation between the two participants
     // Query the database for any existing conversations where the "participants" array has exactly two elements,
     // and both elements match the "to" and "from" user IDs.
@@ -201,8 +178,21 @@ io.on("connection", async (socket) => {
     // If no existing conversation is found, create a new conversation document and emit the
     // "newConversationStarted" event with the new conversation details
     if (existingConversations.length === 0) {
+
+
+      const initiatorUser = await User.findById(initiator);
+
+      let conversationName;
+      if (groupName !== undefined)  // If it's group conversation creation request
+      {
+        conversationName = groupName;
+      } else { // If it is individual group request then name should be use name
+        conversationName = initiatorUser.firstName + " " + initiatorUser.lastName;
+      }
+
       // Create a new conversation document in the database with the "sender" and "conversationParticipants" user IDs as participants
       let newChat = await Conversation.create({
+        name: conversationName,
         participants: conversationParticipants,
       });
       // Fetch the newly created conversation document and populate the "participants" field with user details
@@ -223,11 +213,8 @@ io.on("connection", async (socket) => {
   socket.on("textMessage", async (data) => {
     const { sender, conversationId, text } = data;
     const existingConversation = await Conversation.findById(conversationId).populate('participants', 'socketId');
+    // Check if existing conversation exists
     if (existingConversation) {
-      if (!existingConversation.messages) {
-        existingConversation.messages = [];
-      }
-
       existingConversation.messages.push({ sender, type: "Text", text });
       await existingConversation.save();
       await existingConversation.participants.forEach(p => {
@@ -241,23 +228,8 @@ io.on("connection", async (socket) => {
   });
 
 
-  socket.on("getMessages", async (data, callback) => {
-    try {
-      const { messages } = await Conversation.findById(
-        data.conversationId
-      ).select("messages");
-      callback(messages);
-    } catch (error) {
-      console.log(error);
-    }
-  });
-
-  // Handle incoming text/link messages
-  socket.on("textMessage", async (data) => {
 
 
-
-  });
 
   // handle Media/Document Message
   socket.on("fileMessage", (data) => {
@@ -493,8 +465,8 @@ io.on("connection", async (socket) => {
   socket.on("end", async (data) => {
     // Find user by ID and set status as offline
 
-    if (data.userId) {
-      await User.findByIdAndUpdate(data.userId, { status: "Offline" });
+    if (data.userID) {
+      await User.findByIdAndUpdate(userId, { status: "Offline" });
     }
 
     // broadcast to all conversation rooms of this user that this user is offline (disconnected)

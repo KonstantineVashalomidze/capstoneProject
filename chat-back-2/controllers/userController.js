@@ -351,7 +351,8 @@ exports.getFriends = catchAsync(async (req, res, next) => {
 exports.getCurrentConversationMessages = catchAsync(async (req, res, next) => {
   const conversationId = req.params.conversationId; // Get the conversationId from the URL parameters
 
-// Fetch the conversation from the database using the conversationId and populate the sender field
+
+  // Fetch the conversation from the database using the conversationId and populate the sender field
   const conversation = await Conversation.findById(conversationId).populate('messages.sender', '_id');
 
   if (!conversation) {
@@ -417,10 +418,5 @@ exports.getMutualFriends = catchAsync(async (req, res, next) => {
     message: 'Friends found successfully!',
   });
 });
-
-
-
-
-
 
 

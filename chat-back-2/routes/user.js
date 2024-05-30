@@ -30,7 +30,4 @@ router.get("/get-mutual-friends", authController.protect, userController.getMutu
 router.get("/get-current-conversation-messages/:conversationId", authController.protect, userController.getCurrentConversationMessages);
 
 
-
-
-
 module.exports = router;

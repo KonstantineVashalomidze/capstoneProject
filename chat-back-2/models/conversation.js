@@ -10,10 +10,18 @@ const conversationSchema = new mongoose.Schema({
   isPinned: {
     type: Boolean,
   },
-  isBlocked: {
-    type: Boolean,
-    default: false
-  },
+  admins: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+  ],
+  mutedParticipants: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+  ],
   participants: [
     {
       type: mongoose.Schema.ObjectId,

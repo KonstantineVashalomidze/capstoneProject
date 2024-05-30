@@ -203,8 +203,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   // It first attempts to extract the JWT from the Authorization header or the jwt cookie
   let token;
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
   ) {
     // If the Authorization header is present and starts with "Bearer ", it means the JWT is sent using the
     // Bearer scheme.
@@ -238,6 +238,15 @@ exports.protect = catchAsync(async (req, res, next) => {
       message: "User with that token doesn't exist anymore.",
     });
   }
+
+  // Add a check for whether the user is verified or not
+  if (!associatedWithTokenUser.verified) {
+    // If the user is not verified, send a 403 Forbidden response with an appropriate message
+    return res.status(403).json({
+      message: "Your account is not verified. Please verify your account to continue.",
+    });
+  }
+
   // Even if the user exists, the middleware checks if the user changed their password after the token was issued
   // If the password was changed, the token is considered invalid and cannot be used for authentication
   if (associatedWithTokenUser.changedPasswordAfter(decoded.iat)) {
@@ -248,8 +257,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     });
   }
 
-
-  // If all checks pass, it means the user is authenticated and the token is valid
+  // If all checks pass, it means the user is authenticated, verified, and the token is valid
   // The user object is attached to the request object for use in subsequent middleware functions or route handlers
   req.user = associatedWithTokenUser;
   next();
