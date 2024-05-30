@@ -8,6 +8,7 @@ import "simplebar-react/dist/simplebar.min.css";
 import FriendRequests from "../../components/dialogs/chats/FriendRequests";
 import {useDispatch, useSelector} from "react-redux";
 import {
+    fetchCurrentConversationMessagesAction,
     fetchIndividualConversationsAction,
     setCurrentConversationAction,
 } from "../../redux/slices/app";
@@ -69,6 +70,7 @@ export const ChatElement = ({ _id, messages, participants }) => {
         <Box
             onClick={() => {
                 dispatch(setCurrentConversationAction((currentConversation?._id === _id ? null : conversations.find(c => c._id.toString() === _id.toString()))));
+                dispatch(fetchCurrentConversationMessagesAction(currentConversation?._id));
             } }
             sx={{
                 width: "100%",
@@ -170,7 +172,7 @@ const Chats = () => {
         // socket.emit("getCurrentMessages", {_id: currentConversation._id}, (data) => {
         //     dispatch(setCurrentConversationAction(data));
         // });
-    }, []);
+    }, [userId]);
 
 
     const handleHideFriendsRequestsDialog = () => {
