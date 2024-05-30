@@ -181,10 +181,7 @@ io.on("connection", async (socket) => {
 
   });
 
-  socket.on("getCurrentConversations", async ({ userId }, callback) => {
-    const currentConversations = await Conversation.find({ participants: { $in: [userId] } });
-    callback(currentConversations);
-  });
+
 
 
 
@@ -198,7 +195,8 @@ io.on("connection", async (socket) => {
     // Populate the "participants" field with the firstName, lastName, _id, email, and status fields from the user documents.
     const existingConversations = await Conversation.find({
       participants: { $all: conversationParticipants},
-    }).populate("participants", "firstName lastName _id email status");
+    }).populate("participants", "firstName lastName _id email status")
+        .populate("messages.sender", "_id");
 
     // If no existing conversation is found, create a new conversation document and emit the
     // "newConversationStarted" event with the new conversation details
@@ -211,7 +209,7 @@ io.on("connection", async (socket) => {
       newChat = await Conversation.findById(newChat).populate(
         "participants",
         "firstName lastName _id email status"
-      );
+      ).populate("messages.sender", "_id");
       // Emit the "newConversationStarted" event to the client with the new conversation details as the payload
       socket.emit("newConversationStarted", {data: newChat, message: "new conversation created"});
     }

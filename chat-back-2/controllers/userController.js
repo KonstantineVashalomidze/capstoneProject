@@ -355,9 +355,10 @@ exports.getCurrentConversationMessages = catchAsync(async (req, res, next) => {
   const conversation = await Conversation.findById(conversationId).populate('messages.sender', '_id');
 
   if (!conversation) {
-    console.log("conversation not found: getCurrentConversation")
     return;
   }
+
+
   // Send the conversation messages as the response
   res.status(200).json({
     status: 'success',
