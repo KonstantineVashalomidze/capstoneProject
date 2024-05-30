@@ -143,14 +143,10 @@ exports.verifyOTP = catchAsync(async (req, res, next) => {
   user.otp = undefined;
   await user.save({ new: true, validateModifiedOnly: true });
 
-  const token = generateJWT(user._id); // Generate JWT (JSON Web Token) for the user
-
   // Respond with success status, token, and user ID
   res.status(200).json({
     status: "success",
     message: "OTP verified Successfully!",
-    token,
-    userId: user._id,
   });
 });
 
@@ -194,6 +190,7 @@ exports.login = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Logged in successfully!",
     token,
+    isVerified: user.verified,
     userId: user._id,
   });
 });
@@ -338,13 +335,9 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save(); // Save the updated user
 
-  /* Generate JWT (JSON Web Token) for the user */
-  const token = generateJWT(user._id);
-
   // Respond with success status and JWT
   res.status(200).json({
     status: "success",
     message: "Password updated Successfully",
-    token,
   });
 });

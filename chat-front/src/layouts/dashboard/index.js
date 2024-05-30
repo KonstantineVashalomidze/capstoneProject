@@ -26,7 +26,7 @@ import {
 const DashboardLayout = () => {
     const dispatch = useDispatch();
 
-    const {isLoggedIn} = useSelector((state) => state.auth);
+    const {isLoggedIn, isVerified} = useSelector((state) => state.auth);
     const conversations = useSelector(state => state.app.conversations.currentConversations);
     const userId = useSelector(state => state.app.loggedInUser._id);
     const currentConversationId = useSelector(state => state.app.conversations.currentConversation?._id);
@@ -167,6 +167,10 @@ const DashboardLayout = () => {
 
     if (!isLoggedIn) {
         return <Navigate to={"auth/login"} />;
+    }
+
+    if (!isVerified) {
+
     }
 
   return (

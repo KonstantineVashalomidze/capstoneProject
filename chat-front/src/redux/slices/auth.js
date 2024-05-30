@@ -8,7 +8,8 @@ const initialState = {
     token: "",
     isLoading: false,
     email:"",
-    error: false
+    error: false,
+    isVerified: false,
 }
 
 
@@ -23,6 +24,7 @@ const slice = createSlice({
         logIn(state, action) {
             state.isLoggedIn = action.payload.isLoggedIn;
             state.token = action.payload.token;
+            state.isVerified = action.payload.isVerified;
         },
         signOut(state, action) {
             state.isLoggedIn = false;
@@ -48,6 +50,7 @@ export function LoginUser(form) { // Email and Password
         }).then(function (res) {
             dispatch(slice.actions.logIn({
                 isLoggedIn: true,
+                isVerified: res.data.isVerified,
                 token: res.data.token,
             }));
             dispatch(setSnackbarAction({
@@ -166,10 +169,6 @@ export function UpdatePassword(form) {
                 "Content-type": "application/json"
             }
         }).then((res) => {
-            dispatch(slice.actions.logIn({
-                isLoggedIn: true,
-                token: res.data.token,
-            }));
             dispatch(setSnackbarAction({
                 duration: 3000,
                 isOpened: true,
@@ -269,16 +268,11 @@ export function VerifyEmail(form) {
     return async (dispatch, getState) => {
         await axios.post("/auth/verify-otp", {
             ...form
-        }, {
+        },{
             headers: {
                 "Content-type": "application/json"
             }
         }).then((res) => {
-            console.log(res);
-            dispatch(slice.actions.logIn({
-                isLoggedIn: true,
-                token: res.data.token,
-            }));
             dispatch(setSnackbarAction({
                 duration: 3000,
                 isOpened: true,

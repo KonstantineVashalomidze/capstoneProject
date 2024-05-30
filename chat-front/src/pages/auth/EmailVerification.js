@@ -41,6 +41,7 @@ const EmailVerification = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setIsVerified(true);
 
         const enteredCode = verificationCode.join("");
 
@@ -51,7 +52,6 @@ const EmailVerification = () => {
         }
 
         try {
-            console.log(email);
             dispatch(VerifyEmail({email: email, otp: enteredCode}));
         } catch (err) {
             console.log(err);
