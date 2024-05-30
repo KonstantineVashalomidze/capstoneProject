@@ -28,9 +28,7 @@ const Group = () => {
 
 
     useEffect(() => {
-        socket.emit("getCurrentConversations", {userId}, (data) => {
-            dispatch(fetchGroupConversationsAction());
-        });
+        dispatch(fetchGroupConversationsAction());
 
         // socket.emit("getCurrentMessages", {_id: currentConversation._id}, (data) => {
         //     dispatch(setCurrentConversationAction(data));

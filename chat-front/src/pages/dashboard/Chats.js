@@ -43,24 +43,15 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
         },
     },
 }));
-export const ChatElement = ({ _id, messages, participants }) => {
+export const ChatElement = ({ _id, name, messages, participants }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
     const isGroup = useSelector(state => state.app.sidebar.selectedIcon === "group");
     const currentConversation = useSelector((state) => state.app.conversations?.currentConversation);
     const conversations = useSelector(state => isGroup ? state.app.conversations.currentConversations.groupConversations : state.app.conversations.currentConversations.individualConversations);
     const userId = useSelector(state => state.app.loggedInUser._id);
-    const name = isGroup ? participants?.reduce((accumulator, currentValue, currentIndex) => {
-        if (currentIndex < 3) {
-            if (currentIndex !== 2)
-            {
-                return accumulator + currentValue.firstName + ", ";
-            } else {
-                return accumulator + currentValue.firstName;
-            }
-        }
-       return accumulator;
-    }, "") : participants.find(p => p._id.toString() !== userId).firstName + " " + participants.find(p => p._id.toString() !== userId).lastName;
+
+
 
     const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId).status === "Online");
 
@@ -162,17 +153,12 @@ const Chats = () => {
     const isGroup = useSelector(state => state.app.sidebar.selectedIcon === "group");
     const conversations = useSelector(state => isGroup ? state.app.conversations.currentConversations.groupConversations : state.app.conversations.currentConversations.individualConversations);
     const currentConversation = useSelector(state => state.app.conversations.currentConversation);
-
+    const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
 
     useEffect(() => {
-        socket.emit("getCurrentConversations", {userId}, (data) => {
-            dispatch(fetchIndividualConversationsAction());
-        });
+        dispatch(fetchIndividualConversationsAction());
 
-        // socket.emit("getCurrentMessages", {_id: currentConversation._id}, (data) => {
-        //     dispatch(setCurrentConversationAction(data));
-        // });
-    }, [userId]);
+    }, [userId, isLoggedIn]);
 
 
     const handleHideFriendsRequestsDialog = () => {

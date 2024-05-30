@@ -144,12 +144,6 @@ const DashboardLayout = () => {
             });
 
             socket.on("textMessageReceivedNotification", (data) => {
-                dispatch(setSnackbarAction({
-                    duration: 3000,
-                    isOpened: true,
-                    message: "New message notification",
-                    severity: "success",
-                }));
 
                 dispatch(fetchCurrentConversationMessagesAction(data.conversationId));
 

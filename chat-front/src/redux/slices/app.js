@@ -64,6 +64,9 @@ const slice = createSlice({
     name: 'app',
     initialState,
     reducers: {
+        reset(state) {
+            Object.assign(state, initialState)
+        },
         setLoggedInUser(state, action) {
             state.loggedInUser = action.payload;
         },
@@ -327,6 +330,13 @@ export function fetchCurrentConversationMessagesAction (conversationId) {
             console.log(err);
         });
     }
+}
+
+
+export function resetState() {
+    return async (dispatch, getState) => {
+      dispatch(slice.actions.reset());
+    };
 }
 
 

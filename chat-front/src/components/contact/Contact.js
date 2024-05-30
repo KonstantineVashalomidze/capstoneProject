@@ -37,7 +37,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 
-const BlockDialog = ({open, handleClose}) => {
+const LeaveDialog = ({open, handleClose}) => {
 
 
     return (
@@ -48,16 +48,16 @@ const BlockDialog = ({open, handleClose}) => {
             onClose={handleClose}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>{"Block"}</DialogTitle>
+            <DialogTitle>{"Leave"}</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-slide-description">
-                    Are you sure you want to block this contact?
+                    Are you sure you want to leave this contact?
                     you will no longer be able to make messages/calls to this person.
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>
-                <Button onClick={handleClose}>Block</Button>
+                <Button onClick={handleClose}>Leave</Button>
             </DialogActions>
         </Dialog>
     )
@@ -97,13 +97,14 @@ const Contact = () => {
     const theme = useTheme();
     const dispatch = useDispatch();
     const [muted, setMute] = useState(false);
-    const [showBlock, setShowBlock] = useState(false);
+    const [showLeave, setShowLeave] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const currentConversationId = useSelector(state => state.app.conversations.currentConversation._id);
+    const userId = useSelector(state => state.app.loggedInUser._id);
 
-    const handleCloseBlock = () => {
-        setShowBlock(false);
-        socket.emit("blockConversation", { currentConversationId });
+    const handleCloseLeave = () => {
+        setShowLeave(false);
+
     }
 
 
@@ -251,15 +252,15 @@ const Contact = () => {
                     </Stack>
                 </Stack>
                 <Stack p={1} direction={"row"} alignItems={"center"} spacing={2} justifyContent={"center"}>
-                    <Button onClick={() => {setShowBlock(true);}} startIcon={<UserMinus weight="fill" />} fullwidth variant={"outlined"} sx={{borderRadius: 2}}>
-                        Block
+                    <Button onClick={() => {setShowLeave(true);}} startIcon={<UserMinus weight="fill" />} fullwidth variant={"outlined"} sx={{borderRadius: 2}}>
+                        Leave
                     </Button>
                     <Button onClick={() => {setShowDelete(true)}} startIcon={<UserCircleMinus weight="fill" />} fullwidth variant={"outlined"} sx={{borderRadius: 2}}>
                         Delete
                     </Button>
                 </Stack>
             </Stack>
-            {showBlock && <BlockDialog open={showBlock} handleClose={handleCloseBlock} />}
+            {showLeave && <LeaveDialog open={showLeave} handleClose={handleCloseLeave} />}
             {showDelete && <DeleteDialog open={showDelete} handleClose={handleCloseDelete} />}
         </Box>
     );

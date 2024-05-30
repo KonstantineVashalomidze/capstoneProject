@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "../../utils/axios"
-import {setLoggedInUserAction, setSnackbarAction} from "./app";
+import {resetState, setLoggedInUserAction, setSnackbarAction} from "./app";
 
 
 const initialState = {
@@ -103,17 +103,7 @@ export function LoginUser(form) { // Email and Password
 
 export function LogoutUser() {
     return (dispatch, getState) => {
-        dispatch(setLoggedInUserAction({
-            _id: "",
-            friends: [],
-            firstName: "",
-            lastName: "",
-            friendRequests: [],
-            about: "",
-            avatar: "",
-            mutualFriends: [],
-            status: "",
-        }));
+        dispatch(resetState());
         dispatch(slice.actions.signOut());
     };
 };
