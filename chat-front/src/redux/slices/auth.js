@@ -28,11 +28,12 @@ const slice = createSlice({
         },
         signOut(state, action) {
             state.isLoggedIn = false;
+            state.isVerified = false;
             state.token = "";
         },
         updateSignupEmail(state, action) {
             state.email = action.payload.email;
-        }
+        },
     }
 });
 

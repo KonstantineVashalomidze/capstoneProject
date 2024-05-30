@@ -33,7 +33,7 @@ const DashboardLayout = () => {
     
     useEffect(() => {
 
-        if (isLoggedIn) {
+        if (isLoggedIn && isVerified) {
             window.onload = function () {
                 if (!window.location.hash) {
                     window.location = window.location + "#loaded";
@@ -166,13 +166,8 @@ const DashboardLayout = () => {
 
 
     if (!isLoggedIn) {
-        return <Navigate to={"auth/login"} />;
+        return <Navigate to={"/auth/login"} />;
     }
-
-    if (!isVerified) {
-
-    }
-
   return (
     <Stack direction={"row"}>
       <Sidebar />
@@ -182,3 +177,11 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+
+
+
+
+
+
+
+
