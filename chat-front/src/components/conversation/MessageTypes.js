@@ -61,22 +61,20 @@ const ReplyMessage = ({el}) => {
 const LinkMessage = ({el}) => {
     const theme = useTheme();
 
-
     return (
         <Stack spacing={2} >
             <Stack p={2} spacing={3} alignItems={"center"} >
                 <img src={el.preview}  alt={el.message} style={{maxHeight: 210, borderRadius: "10px"}} />
                 <Stack spacing={2} >
                     <Typography variant={"subtitle2"} color={el.incoming ? theme.palette.text : "#fff"}>
-                        {el.title}
+                        {el.title?.substring(0, 50) + "..."}
                     </Typography>
                     <Link variant={"subtitle2"}  color={el.incoming ? theme.palette.text : "#000"} href={el.message} target="_blank" rel="noopener noreferrer">
-                        {el.siteName}
+                        {el.siteName?.substring(0, 50) + "..."}
                     </Link>
-
                 </Stack>
                 <Typography variant={"body2"} color={el.incoming ? theme.palette.text : "#fff"} sx={{width: "100%", textAlign: "left"}}>
-                    {el.message}
+                    {el.message?.substring(0, 50) + "..."}
                 </Typography>
             </Stack>
         </Stack>

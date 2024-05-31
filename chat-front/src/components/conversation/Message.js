@@ -130,9 +130,9 @@ const Message = ({menu}) => {
             case "Link":
                 formattedMessage.type = message.type;
                 formattedMessage.message = message.text;
-                formattedMessage.preview = message.file.content;
-                formattedMessage.title = message.file.title;
-                formattedMessage.siteName = message.file.siteName;
+                formattedMessage.preview = message.file?.content;
+                formattedMessage.title = message.file?.title;
+                formattedMessage.siteName = message.file?.siteName;
                 break;
             case "Divider":
                 formattedMessage.type = message.type;
@@ -149,7 +149,6 @@ const Message = ({menu}) => {
 
         return formattedMessage;
     });
-
 
 
 
