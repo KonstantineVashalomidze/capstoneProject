@@ -163,10 +163,8 @@ const slice = createSlice({
             state.loggedInUser.friends = action.payload;
         },
         fetchCurrentConversationMessages(state, action) {
-            if (state.currentConversation)
-            {
+            if (state.conversations.currentConversation)
                 state.conversations.currentConversation.messages = action.payload;
-            };
         }
     }
 })
@@ -321,7 +319,7 @@ export function fetchFriendsAction () {
 
 
 export function fetchCurrentConversationMessagesAction (conversationId) {
-    if (conversationId) {
+    if (conversationId){
         return async (dispatch, getState) => {
             await axios.get(`/user/get-current-conversation-messages/${conversationId}`, {
                 headers: {
@@ -333,8 +331,8 @@ export function fetchCurrentConversationMessagesAction (conversationId) {
             }).catch((err) => {
                 console.log(err);
             });
-        };
-    };
+        }
+    }
 }
 
 
