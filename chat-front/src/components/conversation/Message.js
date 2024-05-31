@@ -58,13 +58,13 @@ const MessageOptions = ({ show }) => {
 
 
 
-const MessageWrapper = ({subtype, el, menu}) => {
+const MessageWrapper = ({el, menu}) => {
 
     const [showOptions, setShowOptions] = useState(false);
     const theme = useTheme();
 
     let messageComponent;
-    switch (el.subtype) {
+    switch (el.type) {
         case "Media":
             messageComponent = <MediaMessage el={el} />;
             break;
@@ -76,6 +76,9 @@ const MessageWrapper = ({subtype, el, menu}) => {
             break;
         case "Reply":
             messageComponent = <ReplyMessage el={el} />;
+            break;
+        case "Divider":
+            messageComponent = <TimeLine el={el} />;
             break;
         default:
             messageComponent = <TextMessage el={el} />;
@@ -108,7 +111,6 @@ const Message = ({menu}) => {
     const userId = useSelector(state => state.app.loggedInUser._id);
     const formattedChatHistory = currentConversation.messages.flatMap((message) =>  {
         const formattedMessage = {
-            type: "Message",
             incoming: message.sender._id.toString() !== userId.toString(),
             outgoing: message.sender._id.toString() === userId.toString(),
         };
@@ -117,18 +119,29 @@ const Message = ({menu}) => {
                 formattedMessage.message = message.text;
                 break;
             case "Media":
-                formattedMessage.subtype = message.type;
+                formattedMessage.type = message.type;
                 formattedMessage.message = message.text;
                 formattedMessage.img = message.file;
                 break;
             case "Document":
-                formattedMessage.subtype = message.type;
+                formattedMessage.type = message.type;
                 formattedMessage.message = message.text;
                 break;
             case "Link":
-                formattedMessage.subtype = message.type;
+                formattedMessage.type = message.type;
                 formattedMessage.message = message.text;
-                formattedMessage.preview = message.file;
+                formattedMessage.preview = message.file.content;
+                formattedMessage.title = message.file.title;
+                formattedMessage.siteName = message.file.siteName;
+                break;
+            case "Divider":
+                formattedMessage.type = message.type;
+                formattedMessage.message = message.text;
+                break;
+            case "Reply":
+                formattedMessage.type = message.type;
+                formattedMessage.message = message.text;
+                formattedMessage.reply = message.repliedTo;
                 break;
             default:
                 break;
@@ -146,14 +159,7 @@ const Message = ({menu}) => {
         <Box p={3} >
             <Stack spacing={3} >
                 {formattedChatHistory.map((el) => {
-                    switch (el.type) {
-                        case "Divider":
-                            return <TimeLine el={el} />;
-                        case "Message":
-                            return <MessageWrapper subtype={el.subtype} el={el} menu={menu}/>;
-                        default:
-                            return <></>;
-                    }
+                    return <MessageWrapper el={el} menu={menu}/>;
                 })}
             </Stack>
         </Box>

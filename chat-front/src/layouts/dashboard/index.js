@@ -143,7 +143,7 @@ const DashboardLayout = () => {
 
             });
 
-            socket.on("textMessageReceivedNotification", (data) => {
+            socket.on("messageReceivedNotification", (data) => {
 
                 dispatch(fetchCurrentConversationMessagesAction(data.conversationId));
 
@@ -160,7 +160,7 @@ const DashboardLayout = () => {
             socket?.off("friendRequestSent");
             socket?.off("newConversationStarted");
             socket?.off("conversationBlocked");
-            socket?.off("textMessageReceivedNotification");
+            socket?.off("messageReceivedNotification");
         };
     }, [isLoggedIn, socket]);
 

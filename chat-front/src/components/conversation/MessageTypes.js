@@ -9,7 +9,7 @@ const TimeLine = ({el}) => {
     return (
         <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} >
             <Divider width={"46%"} />
-            <Typography variant={"caption"} sx={{color: theme.palette.text}} >{el.text}</Typography>
+            <Typography variant={"caption"} sx={{color: theme.palette.text}} >{el.message}</Typography>
             <Divider width={"46%"} />
         </Stack>
     )
@@ -60,17 +60,20 @@ const ReplyMessage = ({el}) => {
 
 const LinkMessage = ({el}) => {
     const theme = useTheme();
+
+
     return (
         <Stack spacing={2} >
             <Stack p={2} spacing={3} alignItems={"center"} >
                 <img src={el.preview}  alt={el.message} style={{maxHeight: 210, borderRadius: "10px"}} />
                 <Stack spacing={2} >
                     <Typography variant={"subtitle2"} color={el.incoming ? theme.palette.text : "#fff"}>
-                        Creating Chat App
+                        {el.title}
                     </Typography>
-                    <Typography variant={"subtitle2"}  color={el.incoming ? theme.palette.text : "#000"} component={Link} to={"https://www.facebook.com/"} >
-                        www.facebook.com
-                    </Typography>
+                    <Link variant={"subtitle2"}  color={el.incoming ? theme.palette.text : "#000"} href={el.message} target="_blank" rel="noopener noreferrer">
+                        {el.siteName}
+                    </Link>
+
                 </Stack>
                 <Typography variant={"body2"} color={el.incoming ? theme.palette.text : "#fff"} sx={{width: "100%", textAlign: "left"}}>
                     {el.message}

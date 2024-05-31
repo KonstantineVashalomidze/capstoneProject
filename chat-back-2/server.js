@@ -12,7 +12,7 @@ const FriendRequest = require("./models/friendRequest");
 const Conversation = require("./models/conversation");
 const AudioCall = require("./models/audioCall");
 const VideoCall = require("./models/videoCall");
-
+const {getLinkPreview} = require("link-preview-js");
 
 // In case of uncaught exceptions
 process.on("uncaughtException", (err) => {
@@ -212,14 +212,38 @@ io.on("connection", async (socket) => {
 
   socket.on("textMessage", async (data) => {
     const { sender, conversationId, text } = data;
+
+
+    let file;
+    let textType = "Link";
+    // pass the link directly
+    await getLinkPreview(text).then((data) => {
+        file = {
+          title: data.title,
+          siteName: data.siteName,
+          content: data.images[0]
+        }
+    }).catch((err) => {
+      textType = "Text";
+    });
+
+
     const existingConversation = await Conversation.findById(conversationId).populate('participants', 'socketId');
     // Check if existing conversation exists
     if (existingConversation) {
-      existingConversation.messages.push({ sender, type: "Text", text });
+      switch (textType) {
+        case "Link":
+          existingConversation.messages.push({ sender, type: textType, text, file });
+          break;
+        default:
+          existingConversation.messages.push({ sender, type: "Text", text });
+          break;
+      }
+
       await existingConversation.save();
-      await existingConversation.participants.forEach(p => {
+      existingConversation.participants.forEach(p => {
         if (p?.socketId) {
-          io.to(p.socketId).emit("textMessageReceivedNotification", {
+          io.to(p.socketId).emit("messageReceivedNotification", {
             conversationId
           });
         }

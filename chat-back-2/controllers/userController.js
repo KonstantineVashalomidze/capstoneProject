@@ -355,6 +355,8 @@ exports.getCurrentConversationMessages = catchAsync(async (req, res, next) => {
   // Fetch the conversation from the database using the conversationId and populate the sender field
   const conversation = await Conversation.findById(conversationId).populate('messages.sender', '_id');
 
+
+
   if (!conversation) {
     return;
   }

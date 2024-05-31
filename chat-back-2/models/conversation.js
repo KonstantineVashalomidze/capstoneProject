@@ -36,7 +36,10 @@ const conversationSchema = new mongoose.Schema({
       },
       type: {
         type: String,
-        enum: ["Text", "Media", "Document", "Link"],
+        enum: ["Text", "Media", "Document", "Link", "Divider", "Reply"],
+      },
+      repliedTo: {
+        type: String,
       },
       createdAt: {
         type: Date,
@@ -46,7 +49,15 @@ const conversationSchema = new mongoose.Schema({
         type: String,
       },
       file: {
-        type: String,
+        title: {
+          type: String,
+        },
+        siteName: {
+          type: String,
+        },
+        content: {
+          type: String,
+        },
       },
     },
   ],
