@@ -41,6 +41,9 @@ export default function Router() {
         { path: "group", element: <Group /> },
         { path: "call-history", element: <CallHistory /> },
         { path: "profile-setup", element: <ProfileSetup /> },
+        { path: "meeting-view", element: <Meeting /> },
+
+
 
         { path: "404", element: <Page404 /> },
         { path: "*", element: <Navigate to="/404" replace /> },
@@ -90,8 +93,8 @@ const EmailVerification = Loadable(
     lazy(() => import("../pages/auth/EmailVerification")),
 );
 
-
-
-
+const Meeting = Loadable(
+    lazy(() => import("../pages/dashboard/videosdk/meeting")),
+);
 
 const Page404 = Loadable(lazy(() => import("../pages/Page404")));

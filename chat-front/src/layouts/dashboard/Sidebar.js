@@ -69,7 +69,7 @@ const SideBar = () => {
             <Stack direction={"column"} alignItems={"center"} justifyContent={"space-between"} sx={{height: "100%"}} spacing={3}>
                 <Stack alignItems={"center"} spacing={2}>
                     <Box>
-                        <img src={Logo} alt={"Chat App Logo"}/>
+                        <img src={Logo} alt={"Chat Meeting Logo"}/>
                     </Box>
                     <Stack spacing={2} sx={{width: "max-content"}} direction={"column"} alignItems={"center"}>
                         {Nav_Buttons.map((el) =>

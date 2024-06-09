@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {Navigate, Outlet} from "react-router-dom";
+import {Navigate, Outlet, useNavigate} from "react-router-dom";
 import {Stack} from "@mui/material";
 
 
@@ -12,7 +12,7 @@ import {
     friendAcceptedRequestAction,
     friendRequestAcceptedAction,
     friendRequestReceivedAction,
-    SelectConversationElement,
+    SelectConversationElement, setAuthTokenAction, setCurrentCallAction,
     setCurrentConversationAction,
     setCurrentConversationsAction,
     setLoggedInUserAction,
@@ -30,7 +30,8 @@ const DashboardLayout = () => {
     const conversations = useSelector(state => state.app.conversations.currentConversations);
     const userId = useSelector(state => state.app.loggedInUser._id);
     const currentConversationId = useSelector(state => state.app.conversations.currentConversation?._id);
-    
+    const navigate = useNavigate();
+
     useEffect(() => {
 
         if (isLoggedIn) {
@@ -150,6 +151,12 @@ const DashboardLayout = () => {
             });
 
 
+            socket.on("incomingCallNotification", (data) => {
+                dispatch(setCurrentCallAction(data));
+                navigate("/meeting-view");
+            });
+
+
 
         }
 
@@ -161,6 +168,7 @@ const DashboardLayout = () => {
             socket?.off("newConversationStarted");
             socket?.off("conversationBlocked");
             socket?.off("messageReceivedNotification");
+            socket?.off("incomingCallNotification");
         };
     }, [isLoggedIn, socket]);
 

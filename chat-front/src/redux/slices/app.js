@@ -28,8 +28,12 @@ const initialState = {
             isPinned: false,
             participants: [],
             messages: [],
-            isIndividual: true,
         },
+    },
+    calls: {
+      currentCall: {
+
+      }
     },
     logs: {
         snackbar: {
@@ -165,6 +169,9 @@ const slice = createSlice({
         fetchCurrentConversationMessages(state, action) {
             if (state.conversations.currentConversation)
                 state.conversations.currentConversation.messages = action.payload;
+        },
+        setCurrentCall(state, action) {
+            state.calls.currentCall = action.payload;
         }
     }
 })
@@ -333,6 +340,12 @@ export function fetchCurrentConversationMessagesAction (conversationId) {
             });
         }
     }
+}
+
+export function setCurrentCallAction(data) {
+    return async (dispatch, getState) => {
+        dispatch(slice.actions.setCurrentCall(data));
+    };
 }
 
 

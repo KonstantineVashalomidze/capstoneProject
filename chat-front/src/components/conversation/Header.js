@@ -4,6 +4,7 @@ import {CaretDown, MagnifyingGlass, Phone, VideoCamera} from "phosphor-react";
 import {useDispatch, useSelector} from "react-redux";
 import {toggleContactInfoAction} from "../../redux/slices/app";
 
+import {socket} from "../../sockets/socket";
 
 
 
@@ -68,10 +69,10 @@ const Header = () => {
                 </Stack>
             </Stack>
             <Stack direction={"row"} alignItems={"center"} spacing={3}>
-                <IconButton >
+                <IconButton onClick={() => {socket.emit("startCall", {userId, conversationId: currentConversation?._id});}} >
                     <VideoCamera color={theme.palette.primary.main} />
                 </IconButton>
-                <IconButton >
+                <IconButton onClick={() => {socket.emit("startCall", {userId, conversationId: currentConversation?._id});}} >
                     <Phone color={theme.palette.primary.main} />
                 </IconButton>
                 <IconButton >

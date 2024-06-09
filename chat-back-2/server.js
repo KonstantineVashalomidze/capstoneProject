@@ -13,6 +13,8 @@ const Conversation = require("./models/conversation");
 const AudioCall = require("./models/audioCall");
 const VideoCall = require("./models/videoCall");
 const {getLinkPreview} = require("link-preview-js");
+const uuid4 = require("uuid4");
+
 
 // In case of uncaught exceptions
 process.on("uncaughtException", (err) => {
@@ -165,49 +167,49 @@ io.on("connection", async (socket) => {
 
   socket.on("startConversation", async (data) => {
     // Receive the "startConversation" event from the client
-    const {initiator, conversationParticipants, groupName} = data;    // Destructure the "conversationInitiator: id" and "conversationParticipants: list of id's" properties from the received data object
+    const { initiator, conversationParticipants, groupName } = data; // Destructure the data object
+
     // Check if there is any existing conversation between the two participants
-    // Query the database for any existing conversations where the "participants" array has exactly two elements,
-    // and both elements match the "to" and "from" user IDs.
-    // Populate the "participants" field with the firstName, lastName, _id, email, and status fields from the user documents.
     const existingConversations = await Conversation.find({
-      participants: { $all: conversationParticipants},
+      participants: { $all: conversationParticipants },
     }).populate("participants", "firstName lastName _id email status")
         .populate("messages.sender", "_id");
 
-    // If no existing conversation is found, create a new conversation document and emit the
-    // "newConversationStarted" event with the new conversation details
+    // If no existing conversation is found, create a new conversation document
     if (existingConversations.length === 0) {
 
-
-      const initiatorUser = await User.findById(initiator);
-
       let conversationName;
-      if (groupName !== undefined)  // If it's group conversation creation request
-      {
+
+      if (groupName !== undefined) { // If it's a group conversation creation request
         conversationName = groupName;
-      } else { // If it is individual group request then name should be use name
-        conversationName = initiatorUser.firstName + " " + initiatorUser.lastName;
+      } else { // If it's an individual conversation request
+        // Identify the addressat (the other participant)
+        const addressatId = conversationParticipants.find(id => id !== initiator);
+        const addressatUser = await User.findById(addressatId);
+
+        conversationName = addressatUser.firstName + " " + addressatUser.lastName;
       }
 
-      // Create a new conversation document in the database with the "sender" and "conversationParticipants" user IDs as participants
+      // Create a new conversation document in the database
       let newChat = await Conversation.create({
         name: conversationName,
         participants: conversationParticipants,
       });
+
       // Fetch the newly created conversation document and populate the "participants" field with user details
-      newChat = await Conversation.findById(newChat).populate(
-        "participants",
-        "firstName lastName _id email status"
+      newChat = await Conversation.findById(newChat._id).populate(
+          "participants",
+          "firstName lastName _id email status"
       ).populate("messages.sender", "_id");
+
       // Emit the "newConversationStarted" event to the client with the new conversation details as the payload
-      socket.emit("newConversationStarted", {data: newChat, message: "new conversation created"});
-    }
-    else {
-      // Emit the "startChat" event to the client with the first existing conversation as the payload
-      socket.emit("newConversationStarted", {data: existingConversations[0]});
+      socket.emit("newConversationStarted", { data: newChat, message: "new conversation created" });
+    } else {
+      // Emit the "newConversationStarted" event to the client with the first existing conversation as the payload
+      socket.emit("newConversationStarted", { data: existingConversations[0] });
     }
   });
+
 
   socket.on("linkMessage", async (data) => {
     const { sender, conversationId, link } = data;
@@ -291,21 +293,44 @@ io.on("connection", async (socket) => {
 
   // -------------- HANDLE AUDIO CALL SOCKET EVENTS ----------------- //
 
-  // handle startAudioCall event
-  socket.on("startAudioCall", async (data) => {
-    const { from, to, roomID } = data;
-
-    const toUser = await User.findById(to);
-    const fromUser = await User.findById(from);
 
 
-    // send notification to receiver of call
-    io.to(toUser?.socketId).emit("audioCallNotification", {
-      from: fromUser,
-      roomID,
-      streamID: from,
-      userID: to,
-      userName: to,
+// Function to generate the Video SDK token using Promises
+  function generateVideoSDKToken() {
+    return new Promise((resolve, reject) => {
+      jwt.sign({
+        apikey: "dc2f6264-edc6-475d-84fd-70819f320054",
+        permissions: ["allow_join"],
+      }, "a60c1bb7ee0f2299f8d06aceccacb21bf56915b057925c4a96526e4d31c0edcd", {
+        algorithm: "HS256",
+        expiresIn: "24h",
+        jwtid: uuid4(),
+      }, function (err, token) {
+        if (err) {
+          return reject(err);
+        }
+        resolve(token);
+      });
+    });
+  }
+
+
+  socket.on("startCall", async (data) => {
+    const { userId, conversationId } = data;
+
+    const caller = await User.findById(userId);
+    const conversation = await Conversation.findById(conversationId).populate('participants', 'socketId');
+
+    // Generate the authToken using the helper function
+    const authToken = await generateVideoSDKToken();
+    conversation.participants.forEach(p => {
+      if (p?.socketId) {
+        io.to(p.socketId).emit("incomingCallNotification", {
+          userId,
+          conversationId,
+          authToken
+        });
+      }
     });
   });
 

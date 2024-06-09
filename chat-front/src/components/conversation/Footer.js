@@ -110,6 +110,18 @@ const ChatInput = ({ setShowPicker, inputValue, setInputValue, onTyping, onStopp
     );
 };
 
+
+
+function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return !!pattern.test(str);
+}
+
 const Footer = () => {
     const theme = useTheme();
     const [showPicker, setShowPicker] = useState(false);
@@ -126,7 +138,11 @@ const Footer = () => {
     };
 
     const onSendMessage = (message) => {
-        socket.emit("textMessage", {text: message, conversationId: currentConversation._id, sender: userId});
+        if (validURL(message)) {
+            socket.emit("linkMessage", {link: message, conversationId: currentConversation._id, sender: userId});
+        } else {
+            socket.emit("textMessage", {text: message, conversationId: currentConversation._id, sender: userId});
+        }
     };
 
     return (
