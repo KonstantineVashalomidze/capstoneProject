@@ -7,7 +7,7 @@ import {
 } from "@videosdk.live/react-sdk";
 import { createMeeting } from "./API";
 import ReactPlayer from "react-player";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {
     Avatar,
     Box,
@@ -33,6 +33,7 @@ import {
 } from "phosphor-react";
 import {useTheme} from "@mui/material/styles";
 import {useNavigate} from "react-router-dom";
+import {dispatch} from "../../../redux/store";
 
 
 function ParticipantView(props) {
@@ -242,7 +243,6 @@ const Meeting = () => {
     const theme = useTheme();
     const loggedInUser = useSelector(state => state.app.loggedInUser);
 
-
     const getMeetingAndToken = async () => {
         const meetingId =
             await createMeeting({ authToken: currentCall.authToken });
@@ -263,7 +263,7 @@ const Meeting = () => {
         // } else {
         //     getMeetingAndToken();
         // }
-    }, []); // This empty array ensures the effect runs only on the first render
+    }, []);
 
 
 

@@ -349,7 +349,7 @@ export function setCurrentCallAction(data) {
 }
 
 
-export function resetState() {
+export function resetAppState() {
     return async (dispatch, getState) => {
       dispatch(slice.actions.reset());
     };

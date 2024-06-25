@@ -52,17 +52,20 @@ export const ChatElement = ({ _id, name, messages, participants }) => {
     const userId = useSelector(state => state.app.loggedInUser._id);
 
 
-
     const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId)?.status === "Online");
-
+    const messageAdressat = participants.find(p => p._id.toString() !== userId.toString());
+    const displayName = name.toString() === "" ? messageAdressat.firstName + " " + messageAdressat.lastName : name; 
 
 
     return (
         <Box
             onClick={() => {
-                dispatch(setCurrentConversationAction((currentConversation?._id === _id ? null : conversations.find(c => c._id.toString() === _id.toString()))));
-                dispatch(fetchCurrentConversationMessagesAction(currentConversation?._id));
-            } }
+                const newConversation = currentConversation?._id === _id ? null : conversations.find(c => c._id.toString() === _id.toString());
+                dispatch(setCurrentConversationAction(newConversation));
+                if (newConversation) {
+                    dispatch(fetchCurrentConversationMessagesAction(newConversation._id));
+                }
+            }}
             sx={{
                 width: "100%",
                 borderRadius: 1,
@@ -93,7 +96,7 @@ export const ChatElement = ({ _id, name, messages, participants }) => {
                         <Avatar src={faker.image.avatar()} sx={{boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)"}} />
                     )}
                     <Stack spacing={0.3}>
-                        <Typography variant="subtitle2">{name}</Typography>
+                        <Typography variant="subtitle2">{displayName}</Typography>
                         <Typography variant="caption">{"Last message"}</Typography>
                     </Stack>
                 </Stack>
@@ -154,6 +157,7 @@ const Chats = () => {
     const conversations = useSelector(state => isGroup ? state.app.conversations.currentConversations.groupConversations : state.app.conversations.currentConversations.individualConversations);
     const currentConversation = useSelector(state => state.app.conversations.currentConversation);
     const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+
 
     useEffect(() => {
         dispatch(fetchIndividualConversationsAction());

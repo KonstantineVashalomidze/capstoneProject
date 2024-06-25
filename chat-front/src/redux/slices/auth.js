@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "../../utils/axios"
-import {resetState, setLoggedInUserAction, setSnackbarAction} from "./app";
+import {resetAppState, resetState, setLoggedInUserAction, setSnackbarAction} from "./app";
 
 
 const initialState = {
@@ -26,14 +26,15 @@ const slice = createSlice({
             state.token = action.payload.token;
             state.isVerified = action.payload.isVerified;
         },
-        signOut(state, action) {
-            state.isLoggedIn = false;
-            state.isVerified = false;
-            state.token = "";
-        },
         updateSignupEmail(state, action) {
             state.email = action.payload.email;
         },
+        logOut(state, action) {
+            state.isLoggedIn = false;
+            state.token = "";
+            state.email = "";
+            state.isVerified = false;
+        }
     }
 });
 
@@ -42,6 +43,7 @@ export default slice.reducer;
 
 export function LoginUser(form) { // Email and Password
     return async (dispatch, getState) => {
+        dispatch(slice.actions.updateIsLoading({isLoading: true, error: false}));
         await axios.post("/auth/login", {
            ...form
         }, {
@@ -54,6 +56,7 @@ export function LoginUser(form) { // Email and Password
                 isVerified: res.data.isVerified,
                 token: res.data.token,
             }));
+            dispatch(slice.actions.updateIsLoading({isLoading: false, error: false}));
             dispatch(setSnackbarAction({
                 duration: 3000,
                 isOpened: true,
@@ -73,6 +76,7 @@ export function LoginUser(form) { // Email and Password
             }));
 
         }).catch(function (err) {
+            dispatch(slice.actions.updateIsLoading({isLoading: false, error: true})); // ????
             // Handle different types of errors
             if (err.response) {
                 // The request was made and the server responded with a status code
@@ -107,8 +111,10 @@ export function LoginUser(form) { // Email and Password
 
 export function LogoutUser() {
     return (dispatch, getState) => {
-        dispatch(resetState());
-        dispatch(slice.actions.signOut());
+        dispatch(resetAppState());
+        dispatch(slice.actions.logOut());
+        dispatch(slice.actions.updateIsLoading({isLoading: false, error: false}));
+
     };
 };
 
@@ -323,7 +329,6 @@ export function VerifyEmail(form) {
         });
     };
 };
-
 
 
 

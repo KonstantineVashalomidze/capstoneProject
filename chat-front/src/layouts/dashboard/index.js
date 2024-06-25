@@ -26,7 +26,7 @@ import {
 const DashboardLayout = () => {
     const dispatch = useDispatch();
 
-    const {isLoggedIn, isVerified} = useSelector((state) => state.auth);
+    const {isLoggedIn, isVerified, isLoading} = useSelector((state) => state.auth);
     const conversations = useSelector(state => state.app.conversations.currentConversations);
     const userId = useSelector(state => state.app.loggedInUser._id);
     const currentConversationId = useSelector(state => state.app.conversations.currentConversation?._id);
@@ -155,9 +155,6 @@ const DashboardLayout = () => {
                 dispatch(setCurrentCallAction(data));
                 navigate("/meeting-view");
             });
-
-
-
         }
 
         // Cleanup function to remove the event listeners when the component unmounts
@@ -170,12 +167,16 @@ const DashboardLayout = () => {
             socket?.off("messageReceivedNotification");
             socket?.off("incomingCallNotification");
         };
+
     }, [isLoggedIn, socket]);
 
 
-    if (!isLoggedIn) {
-        return <Navigate to={"/auth/login"} />;
-    }
+    useEffect(() => {
+        if (!isLoggedIn && !isLoading) {
+            navigate("/auth/login");
+        }
+    }, [isLoading, isLoggedIn, isVerified]);
+
   return (
     <Stack direction={"row"}>
       <Sidebar />

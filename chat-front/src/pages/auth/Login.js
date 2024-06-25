@@ -4,7 +4,7 @@ import { Box, Button, InputAdornment, Link, Stack, TextField, Typography } from 
 import Logo from "../../assets/Images/logo.ico";
 import SocialAuth from "./SocialAuth";
 import { Link as RouterLink } from "react-router-dom";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {LoginUser} from "../../redux/slices/auth";
 
 const Login = () => {
@@ -13,6 +13,8 @@ const Login = () => {
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const dispatch = useDispatch();
+
+    const { isLoggedIn, isVerified, isLoading } = useSelector((state) => state.auth);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -34,6 +36,7 @@ const Login = () => {
             dispatch(LoginUser({email: email, password: password}));
         }
     };
+
 
     return (
         <Box justifyContent={"center"} alignItems={"center"}>

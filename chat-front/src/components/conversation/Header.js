@@ -50,6 +50,10 @@ const Header = () => {
 
     const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId)?.status === "Online");
 
+    const messageAdressat = participants.find(p => p._id.toString() !== userId.toString());
+    const displayName = currentConversation.name === "" ? messageAdressat.firstName + " " + messageAdressat.lastName : currentConversation.name;
+
+
 
     return (
         <Stack alignItems={"center"} direction={"row"} justifyContent={"space-between"} sx={{width: "100%", height: "100%"}}>
@@ -61,7 +65,7 @@ const Header = () => {
                 }
                 <Stack spacing={0.2} >
                     <Typography variant={"subtitle2"}>
-                        {currentConversation?.name}
+                        {displayName}
                     </Typography>
                     <Typography variant={"caption"}>
                         {online ? "Online" : "Offline"}
