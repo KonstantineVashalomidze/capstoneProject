@@ -295,6 +295,8 @@ exports.getIndividualConversations = catchAsync(async (req, res, next) => {
 exports.getGroupConversations = catchAsync(async (req, res, next) => {
   const userId = req.user._id;
 
+
+
   // Fetch all group conversations where the current user is a participant
   const conversations = await Conversation.find({
     participants: { $all: [userId] },

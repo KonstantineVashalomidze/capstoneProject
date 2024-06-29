@@ -168,6 +168,7 @@ io.on("connection", async (socket) => {
   socket.on("startConversation", async (data) => {
     // Receive the "startConversation" event from the client
     const { initiator, conversationParticipants, groupName } = data; // Destructure the data object
+    conversationParticipants.push(initiator);
 
     // Check if there is any existing conversation between the two participants
     const existingConversations = await Conversation.find({
@@ -183,16 +184,15 @@ io.on("connection", async (socket) => {
       if (groupName !== undefined) { // If it's a group conversation creation request
         conversationName = groupName;
       } else { // If it's an individual conversation request
-        // Identify the addressat (the other participant)
-        const addressatId = conversationParticipants.find(id => id !== initiator);
-        const addressatUser = await User.findById(addressatId);
-
-        conversationName = addressatUser.firstName + " " + addressatUser.lastName;
+        conversationName = "";
       }
+
+      console.log("initiator", initiator)
 
       // Create a new conversation document in the database
       let newChat = await Conversation.create({
         name: conversationName,
+        admins: [initiator],
         participants: conversationParticipants,
       });
 
@@ -316,19 +316,14 @@ io.on("connection", async (socket) => {
 
 
   socket.on("startCall", async (data) => {
-    const { userId, conversationId } = data;
+    const { userId, meetingId } = data;
+    const conversation = await Conversation.findById(meetingId).populate('participants', 'socketId');
 
-    const caller = await User.findById(userId);
-    const conversation = await Conversation.findById(conversationId).populate('participants', 'socketId');
-
-    // Generate the authToken using the helper function
-    const authToken = await generateVideoSDKToken();
     conversation.participants.forEach(p => {
       if (p?.socketId) {
         io.to(p.socketId).emit("incomingCallNotification", {
-          userId,
-          conversationId,
-          authToken
+          callerId: userId,
+          meetingId: meetingId
         });
       }
     });
