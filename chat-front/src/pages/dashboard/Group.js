@@ -29,10 +29,6 @@ const Group = () => {
 
     useEffect(() => {
         dispatch(fetchGroupConversationsAction());
-
-        // socket.emit("getCurrentMessages", {_id: currentConversation._id}, (data) => {
-        //     dispatch(setCurrentConversationAction(data));
-        // });
     }, []);
 
 
@@ -78,7 +74,7 @@ const Group = () => {
                                 <Typography variant={"subtitle2"} sx={{ color: "#676767" }}>
                                     Pinned
                                 </Typography>
-                                {conversations.filter((el) => el.pinned).map((el) => {
+                                {conversations?.filter((el) => el.pinned).map((el) => {
                                     return <ChatElement {...el} />;
                                 })}
                             </Stack>
@@ -86,7 +82,7 @@ const Group = () => {
                                 <Typography variant={"subtitle2"} sx={{ color: "#676767" }} paddingTop={2}>
                                     All Groups
                                 </Typography>
-                                {conversations.filter((el) => !el.pinned).map((el) => {
+                                {conversations?.filter((el) => !el.pinned).map((el) => {
                                     return <ChatElement {...el} />;
                                 })}
                             </Stack>

@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {toggleContactInfoAction} from "../../redux/slices/app";
 
 import {socket} from "../../sockets/socket";
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -52,7 +53,7 @@ const Header = () => {
 
     const messageAdressat = participants.find(p => p._id.toString() !== userId.toString());
     const displayName = currentConversation.name === "" ? messageAdressat.firstName + " " + messageAdressat.lastName : currentConversation.name;
-
+    const navigate = useNavigate();
 
 
     return (
@@ -73,10 +74,24 @@ const Header = () => {
                 </Stack>
             </Stack>
             <Stack direction={"row"} alignItems={"center"} spacing={3}>
-                <IconButton onClick={() => {socket.emit("startCall", {userId, conversationId: currentConversation?._id});}} >
+                <IconButton onClick={() => navigate("/videosdk", {
+                    state: {
+                        callDirection: "outgoing",
+                        callType: "video",
+                        userId: userId,
+                        meetingId: currentConversation._id.toString()
+                    }
+                })} >
                     <VideoCamera color={theme.palette.primary.main} />
                 </IconButton>
-                <IconButton onClick={() => {socket.emit("startCall", {userId, conversationId: currentConversation?._id});}} >
+                <IconButton onClick={() => navigate("/videosdk", {
+                    state: {
+                        callDirection: "outgoing",
+                        callType: "voice",
+                        userId: userId,
+                        meetingId: currentConversation._id.toString()
+                    }
+                })} >
                     <Phone color={theme.palette.primary.main} />
                 </IconButton>
                 <IconButton >

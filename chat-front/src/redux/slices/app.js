@@ -31,9 +31,12 @@ const initialState = {
         },
     },
     calls: {
-      currentCall: {
+        current: [
 
-      }
+        ],
+        ended: [
+
+        ],
     },
     logs: {
         snackbar: {
@@ -170,9 +173,7 @@ const slice = createSlice({
             if (state.conversations.currentConversation)
                 state.conversations.currentConversation.messages = action.payload;
         },
-        setCurrentCall(state, action) {
-            state.calls.currentCall = action.payload;
-        }
+
     }
 })
 
@@ -342,11 +343,7 @@ export function fetchCurrentConversationMessagesAction (conversationId) {
     }
 }
 
-export function setCurrentCallAction(data) {
-    return async (dispatch, getState) => {
-        dispatch(slice.actions.setCurrentCall(data));
-    };
-}
+
 
 
 export function resetAppState() {

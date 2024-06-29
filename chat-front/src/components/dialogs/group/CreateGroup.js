@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Dialog,
     DialogContent,
@@ -10,7 +10,9 @@ import {
     Chip,
     Autocomplete,
 } from "@mui/material";
-import {User_options} from "../../../data";
+import {fetchFriendsAction, fetchGroupConversationsAction} from "../../../redux/slices/app";
+import {useDispatch, useSelector} from "react-redux";
+import {socket} from "../../../sockets/socket";
 
 
 
@@ -23,6 +25,14 @@ const CreateGroup = ({ open, handleClose }) => {
     const [userInput, setUserInput] = useState(null);
     const [people, setPeople] = useState([]);
     const [error, setError] = useState("");
+    const dispatch = useDispatch();
+    const friends = useSelector(state => state.app.loggedInUser.friends);
+    const loggedInUser = useSelector(state => state.app.loggedInUser);
+
+    useEffect(() => {
+        dispatch(fetchFriendsAction());
+    }, []);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -32,8 +42,13 @@ const CreateGroup = ({ open, handleClose }) => {
             setError("Please add at least two people.");
         } else {
             // Handle form submission logic here
-            console.log("Group Name:", groupName);
-            console.log("People:", people);
+            // console.log("Group Name:", groupName);
+            // console.log("People IDs:", people.map(p => p._id));
+
+            socket.emit("startConversation", { initiator: loggedInUser._id,  groupName: groupName, conversationParticipants: people });
+            dispatch(fetchGroupConversationsAction())
+
+
             // Reset form after submission
             setGroupName("");
             setPeople([]);
@@ -41,16 +56,14 @@ const CreateGroup = ({ open, handleClose }) => {
         }
     };
 
-    const addPerson = (value) => {
-        if (value && !people.includes(value)) {
-            setPeople([...people, value]);
-            setUserInput(null);
+    const addPerson = (person) => {
+        if (person && person._id && !people.some(p => p._id === person._id)) {
+            setPeople([...people, { _id: person._id, name: `${person.firstName} ${person.lastName}` }]);
             setError(""); // Clear error when a person is added
         }
     };
-
-    const removePerson = (personToRemove) => {
-        setPeople(people.filter((p) => p !== personToRemove));
+    const removePerson = (personId) => {
+        setPeople(people.filter((p) => p._id !== personId));
     };
 
 
@@ -84,7 +97,15 @@ const CreateGroup = ({ open, handleClose }) => {
                     <Box sx={{ mt: 2, display: "flex", alignItems: "center" }}>
                         <Autocomplete
                             freeSolo
-                            options={User_options}
+                            options={friends}
+                            getOptionLabel={(option) =>
+                                typeof option === 'string' ? option : `${option.firstName} ${option.lastName}`
+                            }
+                            renderOption={(props, option) => (
+                                <li {...props}>
+                                    {typeof option === 'string' ? option : `${option.firstName} ${option.lastName}`}
+                                </li>
+                            )}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -92,19 +113,16 @@ const CreateGroup = ({ open, handleClose }) => {
                                     label="Add Person"
                                     type="text"
                                     fullWidth
-                                    value={userInput || ""}
-                                    onChange={(e) => setUserInput(e.target.value)}
-                                    onKeyPress={(e) => {
-                                        if (e.key === "Enter") {
-                                            addPerson(userInput);
-                                        }
-                                    }}
                                     error={people.length < 2 && !!error}
                                     helperText={people.length < 2 && error}
                                     onFocus={() => setError("")}
                                 />
                             )}
-                            onInputChange={(e, value) => setUserInput(value)}
+                            onChange={(e, value) => {
+                                if (value && typeof value === 'object') {
+                                    addPerson(value);
+                                }
+                            }}
                             fullWidth
                         />
                         <Button
@@ -119,9 +137,9 @@ const CreateGroup = ({ open, handleClose }) => {
                     <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap" }}>
                         {people.map((p) => (
                             <Chip
-                                key={p}
-                                label={p}
-                                onDelete={() => removePerson(p)}
+                                key={p._id}
+                                label={p.name}
+                                onDelete={() => removePerson(p._id)}
                                 sx={{ mr: 1, mt: 1 }}
                             />
                         ))}

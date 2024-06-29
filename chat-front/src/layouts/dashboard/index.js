@@ -1,6 +1,6 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Navigate, Outlet, useNavigate} from "react-router-dom";
-import {Stack} from "@mui/material";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography} from "@mui/material";
 
 
 import Sidebar from "./Sidebar";
@@ -20,6 +20,7 @@ import {
     showSnackbar,
     updateFriendRequestAction
 } from "../../redux/slices/app";
+import IncomingCall from "../../components/dialogs/chats/IncomingCall";
 
 
 
@@ -31,6 +32,9 @@ const DashboardLayout = () => {
     const userId = useSelector(state => state.app.loggedInUser._id);
     const currentConversationId = useSelector(state => state.app.conversations.currentConversation?._id);
     const navigate = useNavigate();
+    const [showIncomingCall, setShowIncomingCall] = useState(false);
+    const [incomingCallData, setIncomingCallData] = useState(null);
+    const loggedInUser = useSelector(state => state.app.loggedInUser);
 
     useEffect(() => {
 
@@ -152,8 +156,21 @@ const DashboardLayout = () => {
 
 
             socket.on("incomingCallNotification", (data) => {
-                dispatch(setCurrentCallAction(data));
-                navigate("/meeting-view");
+
+                // show dialog
+                // data { meetingId, callerId }
+                // navigateTovideosdk with pars
+
+                // Set the caller information
+                setIncomingCallData({
+                    caller: (conversations.individualConversations.find(c => c._id.toString() === data.meetingId.toString()) || conversations.groupConversations.find(c => c._id.toString() === data.meetingId.toString())).participants.find(p => p._id.toString() === data.callerId.toString()),
+                    meetingId: data.meetingId
+                });
+
+                // Show the incoming call dialog
+                setShowIncomingCall(true);
+
+
             });
         }
 
@@ -178,10 +195,15 @@ const DashboardLayout = () => {
     }, [isLoading, isLoggedIn, isVerified]);
 
   return (
-    <Stack direction={"row"}>
-      <Sidebar />
-      <Outlet />
-    </Stack>
+        <Stack direction={"row"}>
+            <Sidebar />
+            <Outlet />
+            <IncomingCall
+                open={showIncomingCall}
+                handleClose={() => setShowIncomingCall(false)}
+                incomingCallData={incomingCallData}
+            />
+        </Stack>
   );
 };
 

@@ -32,6 +32,10 @@ export default function Router() {
       ]
     },
     {
+      path: "/videosdk",
+      element: <App />
+    },
+    {
       path: "/",
       element: <DashboardLayout />,
       children: [
@@ -41,7 +45,6 @@ export default function Router() {
         { path: "group", element: <Group /> },
         { path: "call-history", element: <CallHistory /> },
         { path: "profile-setup", element: <ProfileSetup /> },
-        { path: "meeting-view", element: <Meeting /> },
 
 
 
@@ -93,8 +96,8 @@ const EmailVerification = Loadable(
     lazy(() => import("../pages/auth/EmailVerification")),
 );
 
-const Meeting = Loadable(
-    lazy(() => import("../pages/dashboard/videosdk/meeting")),
+const App = Loadable(
+    lazy(() => import("../pages/dashboard/videosdk/app")),
 );
 
 const Page404 = Loadable(lazy(() => import("../pages/Page404")));

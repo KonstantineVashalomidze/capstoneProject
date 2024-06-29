@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
-import {Box, IconButton, Menu, MenuItem, Stack} from "@mui/material";
+import {Avatar, Box, IconButton, Menu, MenuItem, Stack} from "@mui/material";
 import {Chat_History, Message_options} from "../../data";
 import {DocumentMessage, LinkMessage, MediaMessage, ReplyMessage, TextMessage, TimeLine} from "./MessageTypes";
 import {useTheme} from "@mui/material/styles";
 import {DotsThreeOutline} from "phosphor-react";
 import {useSelector} from "react-redux";
+import {faker} from "@faker-js/faker";
 
 
 
@@ -89,6 +90,7 @@ const MessageWrapper = ({el, menu}) => {
         <Stack onMouseEnter={() => setShowOptions(true)}
                onMouseLeave={() => setShowOptions(false)}
                direction={"row"} justifyContent={el.incoming ? "start" : "end"} alignItems={"center"} spacing={1}>
+            {(el.incoming && menu) && <Avatar src={faker.image.avatar()} alt={faker.name.fullName()}/>}
             {(!el.incoming && menu) && <MessageOptions show={showOptions} />}
             <Box p={1.5}
                  sx={{
@@ -101,6 +103,7 @@ const MessageWrapper = ({el, menu}) => {
                 {messageComponent}
             </Box>
             {(el.incoming && menu) && <MessageOptions show={showOptions} />}
+            {(!el.incoming && menu) && <Avatar src={faker.image.avatar()} alt={faker.name.fullName()}/>}
         </Stack>
     )
 }
