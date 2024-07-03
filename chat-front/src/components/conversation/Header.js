@@ -48,7 +48,7 @@ const Header = () => {
     const userId = useSelector(state => state.app.loggedInUser._id);
     const participants = currentConversation?.participants.filter(e => e._id !== userId);
     const isGroup = useSelector(state => state.app.sidebar.selectedIcon === "group");
-
+    const loggedInUser = useSelector(state => state.app.loggedInUser);
     const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId)?.status === "Online");
 
     const messageAdressat = participants.find(p => p._id.toString() !== userId.toString());
@@ -76,6 +76,7 @@ const Header = () => {
             <Stack direction={"row"} alignItems={"center"} spacing={3}>
                 <IconButton onClick={() => navigate("/videosdk", {
                     state: {
+                        name: loggedInUser.firstName + " " + loggedInUser.lastName,
                         callDirection: "outgoing",
                         callType: "video",
                         userId: userId,
@@ -86,6 +87,7 @@ const Header = () => {
                 </IconButton>
                 <IconButton onClick={() => navigate("/videosdk", {
                     state: {
+                        name: loggedInUser.firstName + " " + loggedInUser.lastName,
                         callDirection: "outgoing",
                         callType: "voice",
                         userId: userId,

@@ -190,6 +190,8 @@ exports.login = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Logged in successfully!",
     token,
+    firstName: user.firstName,
+    lastName: user.lastName,
     isVerified: user.verified,
     userId: user._id,
   });

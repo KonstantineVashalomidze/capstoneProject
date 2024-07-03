@@ -66,8 +66,8 @@ export function LoginUser(form) { // Email and Password
             dispatch(setLoggedInUserAction({
                 _id: res.data.userId,
                 friends: [],
-                firstName: "",
-                lastName: "",
+                firstName: res.data.firstName,
+                lastName: res.data.lastName,
                 friendRequests: [],
                 about: "",
                 avatar: "",
@@ -289,8 +289,8 @@ export function VerifyEmail(form) {
             dispatch(setLoggedInUserAction({
                 _id: res.data.userId,
                 friends: [],
-                firstName: "",
-                lastName: "",
+                firstName: res.data.firstName,
+                lastName: res.data.lastName,
                 friendRequests: [],
                 about: "",
                 avatar: "",

@@ -12,7 +12,7 @@ import {
     fetchIndividualConversationsAction,
     setCurrentConversationAction,
 } from "../../redux/slices/app";
-import {socket} from "../../sockets/socket";
+import { differenceInMinutes, differenceInHours, differenceInDays, format } from 'date-fns';
 
 
 export const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -43,6 +43,26 @@ export const StyledBadge = styled(Badge)(({ theme }) => ({
         },
     },
 }));
+
+
+// Custom function to format time
+const formatMessageTime = (date) => {
+    const now = new Date();
+    const minutesDiff = differenceInMinutes(now, date);
+    const hoursDiff = differenceInHours(now, date);
+    const daysDiff = differenceInDays(now, date);
+
+    if (minutesDiff < 60) {
+        return `${minutesDiff}m`;
+    } else if (hoursDiff < 24) {
+        return `${hoursDiff}h`;
+    } else if (daysDiff < 7) {
+        return `${daysDiff}d`;
+    } else {
+        return format(date, 'dd/MM');
+    }
+};
+
 export const ChatElement = ({ _id, name, messages, participants }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -51,6 +71,28 @@ export const ChatElement = ({ _id, name, messages, participants }) => {
     const conversations = useSelector(state => isGroup ? state.app.conversations.currentConversations.groupConversations : state.app.conversations.currentConversations.individualConversations);
     const userId = useSelector(state => state.app.loggedInUser._id);
 
+    const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+    let displayMessage = "No messages yet";
+    let timeString = "";
+
+    if (lastMessage) {
+        if (lastMessage.type === 'Text') {
+            displayMessage = lastMessage.text;
+        } else if (lastMessage.type === 'Link') {
+            displayMessage = "Shared a link";
+        } else {
+            displayMessage = `Sent a ${lastMessage.type}`;
+        }
+
+        // Truncate the message if it's too long
+        if (displayMessage.length > 30) {
+            displayMessage = displayMessage.substring(0, 30) + "...";
+        }
+
+        // Format the timestamp
+        const messageDate = new Date(lastMessage.createdAt);
+        timeString = formatMessageTime(messageDate);
+    }
 
     const online = isGroup ? participants?.some(p => p.status === "Online") : (participants?.find(p => p._id.toString() !== userId)?.status === "Online");
     const messageAdressat = participants.find(p => p._id.toString() !== userId.toString());
@@ -97,12 +139,12 @@ export const ChatElement = ({ _id, name, messages, participants }) => {
                     )}
                     <Stack spacing={0.3}>
                         <Typography variant="subtitle2">{displayName}</Typography>
-                        <Typography variant="caption">{"Last message"}</Typography>
+                        <Typography variant="caption">{displayMessage}</Typography>
                     </Stack>
                 </Stack>
                 <Stack alignItems={"center"} pt={2}>
                     <Badge color="primary" badgeContent={2}></Badge>
-                    <Typography sx={{ fontWeight: 600,pt: 2 }} variant="caption">{"3:36"}</Typography>
+                    <Typography sx={{ fontWeight: 600,pt: 2 }} variant="caption">{timeString}</Typography>
                 </Stack>
             </Stack>
         </Box>

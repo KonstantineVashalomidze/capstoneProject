@@ -22,10 +22,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const IncomingCall = ({ open, handleClose, incomingCallData }) => {
     const loggedInUser = useSelector(state => state.app.loggedInUser)
     const navigate = useNavigate();
+
     const handleAccept = () => {
         // Handle call acceptance logic here
         navigate("/videosdk", {
             state: {
+                name: loggedInUser.firstName + " " + loggedInUser.lastName,
                 callDirection: "incoming",
                 callType: "voice",
                 userId: loggedInUser._id,

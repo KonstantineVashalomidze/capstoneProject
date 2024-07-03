@@ -157,7 +157,6 @@ const Message = ({menu}) => {
 
 
 
-
     return (
         <Box p={3} >
             <Stack spacing={3} >

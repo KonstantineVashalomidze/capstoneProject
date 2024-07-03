@@ -113,11 +113,11 @@ const CallHistory = () => {
 
     return (
         <>
-            <Box sx={{ height: "100vh", width: "calc(100vw - 420px)" }}>
+            <Box sx={{ height: "100vh", width: "calc(100vw - 420px)"}}>
                 <SelectCall />
             </Box>
             <Box
-                sx={{ position: "relative", width: 320, backgroundColor: theme.palette.mode === "light" ? "#F8FAFF" : theme.palette.background.paper, boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)' }}>
+                sx={{ position: "relative", width: 320, backgroundColor: theme.palette.mode === "light" ? "#F0F4FA" : theme.palette.background.paper, boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)' }}>
                 <Stack p={1} spacing={2} sx={{ height: "100vh" }}>
                     <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} sx={{boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)", backgroundColor: backgroundColor }}>
                         <Typography p={1.5} variant={"h5"}>
