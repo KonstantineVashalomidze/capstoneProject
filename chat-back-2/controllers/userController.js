@@ -1,7 +1,5 @@
-const AudioCall = require("../models/audioCall");
 const FriendRequest = require("../models/friendRequest");
 const User = require("../models/user");
-const VideoCall = require("../models/videoCall");
 const Conversation = require("../models/conversation");
 const catchAsync = require("../utils/catchAsync");
 const sanitizeObject = require("../utils/sanitizeObject");
